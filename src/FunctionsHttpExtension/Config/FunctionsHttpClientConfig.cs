@@ -30,10 +30,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Config
             IBindingProvider stringInputProvider = factory.BindToInput<FunctionsHttpClientAttribute, string>(typeof(FunctionsHttpClientStringBinder), CreateClient());
             IBindingProvider byteArrayInputProvider = factory.BindToInput<FunctionsHttpClientAttribute, byte[]>(typeof(FunctionsHttpClientByteArrayBinder), CreateClient());
             IBindingProvider streamInputProvider = factory.BindToInput<FunctionsHttpClientAttribute, Stream>(typeof(FunctionsHttpClientStreamBinder), CreateClient());
-            IBindingProvider clientInputProvider = factory.BindToInput(new FunctionsHttpClientBinder(CreateClient()));
+            IBindingProvider clientInputProvider = factory.BindToInput<FunctionsHttpClientAttribute, IFunctionsHttpClient>(typeof(FunctionsHttpClientBinder), CreateClient());
 
             IExtensionRegistry extensions = context.Config.GetService<IExtensionRegistry>();
-            extensions.RegisterBindingRules<FunctionsHttpClientAttribute>(tOutputBindingProvider, stringInputProvider, byteArrayInputProvider, streamInputProvider, clientInputProvider);
+            extensions.RegisterBindingRules<FunctionsHttpClientAttribute>(clientInputProvider, stringInputProvider, byteArrayInputProvider, streamInputProvider, tOutputBindingProvider);
         }
 
         internal IFunctionsHttpClient FunctionsHttpClient { get; set; }
@@ -41,7 +41,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Config
 
         internal Task<IValueBinder> BindForItemAsync(FunctionsHttpClientAttribute attribute, Type type)
         {
-            if (attribute.RequestUrl == null)
+            if (string.IsNullOrWhiteSpace(attribute?.RequestUrl))
             {
                 throw new InvalidOperationException($"{nameof(attribute.RequestUrl)} cannot be null");
             }

@@ -65,18 +65,25 @@ namespace Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.FunctionsHttpCl
 
         private HttpHeaders ParseHeaders(string headers)
         {
-            var keyValuePairs = headers.Split(';').Select(headerPair => new KeyValuePair<string, string>(headerPair.Split('=')[0], headerPair.Split('=')[1])).ToDictionary(x => x.Key, y => y.Value);
-            return ParseHeaders(keyValuePairs);
+            if(headers == null)
+            {
+                return ParseHeaders((IDictionary<string, string>)null);
+            }
+            var headersToApply = headers.Split(';').Select(headerPair => new KeyValuePair<string, string>(headerPair.Split('=')[0], headerPair.Split('=')[1])).ToDictionary(x => x.Key, y => y.Value);
+            return ParseHeaders(headersToApply);
         }
 
-        private HttpHeaders ParseHeaders(IDictionary<string, string> keyValuePairs)
+        private HttpHeaders ParseHeaders(IDictionary<string, string> headers)
         {
-            HttpHeaders headers = new FunctionsHttpClientHeaders();
-            foreach(var keyValuePair in keyValuePairs)
+            HttpHeaders headersToApply = new FunctionsHttpClientHeaders();
+            if (headers != null)
             {
-                headers.Add(keyValuePair.Key, keyValuePair.Value);
+                foreach (var keyValuePair in headers)
+                {
+                    headersToApply.Add(keyValuePair.Key, keyValuePair.Value);
+                }
             }
-            return headers;
+            return headersToApply;
         }
 
         private HttpContent CreateContent<S>(S content, HttpHeaders requestHeaders)

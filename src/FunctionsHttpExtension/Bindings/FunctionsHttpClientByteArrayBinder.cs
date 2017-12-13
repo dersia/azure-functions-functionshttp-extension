@@ -15,6 +15,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Bindings
 
         public async Task<byte[]> ConvertAsync(FunctionsHttpClientAttribute input, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(input?.RequestUrl))
+            {
+                throw new InvalidOperationException($"{nameof(input.RequestUrl)} cannot be null");
+            }
             byte[] result = null;
             switch (input.RequestMethod)
             {

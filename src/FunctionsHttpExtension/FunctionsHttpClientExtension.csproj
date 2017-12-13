@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
     <PackageId>Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient</PackageId>
     <Description>This extension adds in- and out-bindings for Http</Description>
-    <Version>1.0.0-alpha1$(VersionSuffix)</Version>
+    <Version>1.0.0-alpha3</Version>
     <CommitHash Condition="$(CommitHash) == ''">N/A</CommitHash>
     <InformationalVersion>$(Version) Commit hash: $(CommitHash)</InformationalVersion>
     <AssemblyName>Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient</AssemblyName>
@@ -20,8 +20,8 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.0-beta4" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="3.0.0-beta4" />
+    <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.0-beta3" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="3.0.0-beta3" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">

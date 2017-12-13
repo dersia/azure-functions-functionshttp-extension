@@ -20,6 +20,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Bindings
         public string ToInvokeString() => string.Empty;
         public async Task SetValueAsync(object value, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(_context.ResolvedAttribute?.RequestUrl))
+            {
+                throw new InvalidOperationException($"{nameof(_context.ResolvedAttribute.RequestUrl)} cannot be null");
+            }
             switch (_context.ResolvedAttribute.RequestMethod)
             {
                 case RequestMethod.Get:
