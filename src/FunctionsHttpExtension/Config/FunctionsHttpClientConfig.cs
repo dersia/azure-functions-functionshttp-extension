@@ -20,24 +20,23 @@ namespace Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Config
                 throw new ArgumentNullException("context");
             }
             _trace = context.Trace;
-
-            INameResolver nameResolver = context.Config.GetService<INameResolver>();
-
-            IConverterManager converterManager = context.Config.GetService<IConverterManager>();
-            BindingFactory factory = new BindingFactory(nameResolver, converterManager);
-
-            IBindingProvider tOutputBindingProvider = factory.BindToGenericValueProvider<FunctionsHttpClientAttribute>(BindForItemAsync);
-            IBindingProvider stringInputProvider = factory.BindToInput<FunctionsHttpClientAttribute, string>(typeof(FunctionsHttpClientStringBinder), CreateClient());
-            IBindingProvider byteArrayInputProvider = factory.BindToInput<FunctionsHttpClientAttribute, byte[]>(typeof(FunctionsHttpClientByteArrayBinder), CreateClient());
-            IBindingProvider streamInputProvider = factory.BindToInput<FunctionsHttpClientAttribute, Stream>(typeof(FunctionsHttpClientStreamBinder), CreateClient());
-            IBindingProvider clientInputProvider = factory.BindToInput<FunctionsHttpClientAttribute, IFunctionsHttpClient>(typeof(FunctionsHttpClientBinder), CreateClient());
+            var factory = new BindingFactory(context.Config.GetService<INameResolver>(), context.Config.GetService<IConverterManager>());
 
             IExtensionRegistry extensions = context.Config.GetService<IExtensionRegistry>();
-            extensions.RegisterBindingRules<FunctionsHttpClientAttribute>(clientInputProvider, stringInputProvider, byteArrayInputProvider, streamInputProvider, tOutputBindingProvider);
+            extensions.RegisterBindingRules<FunctionsHttpClientAttribute>(CreateBindings(factory));
         }
 
-        internal IFunctionsHttpClient FunctionsHttpClient { get; set; }
-        public FunctionsHttpClientAttribute HttpClientAttribute { get; set; }
+        private IBindingProvider[] CreateBindings(BindingFactory factory)
+        {
+            return new IBindingProvider[] {
+                factory.BindToGenericValueProvider<FunctionsHttpClientAttribute>(BindForItemAsync),
+                factory.BindToInput<FunctionsHttpClientAttribute, OpenType>(typeof(FunctionsHttpClientItemValueInputBinder<>), CreateClient()),
+                factory.BindToInput<FunctionsHttpClientAttribute, string>(typeof(FunctionsHttpClientStringBinder), CreateClient()),
+                factory.BindToInput<FunctionsHttpClientAttribute, byte[]>(typeof(FunctionsHttpClientByteArrayBinder), CreateClient()),
+                factory.BindToInput<FunctionsHttpClientAttribute, Stream>(typeof(FunctionsHttpClientStreamBinder), CreateClient()),
+                factory.BindToInput<FunctionsHttpClientAttribute, IFunctionsHttpClient>(typeof(FunctionsHttpClientBinder), CreateClient())
+            };
+        }
 
         internal Task<IValueBinder> BindForItemAsync(FunctionsHttpClientAttribute attribute, Type type)
         {

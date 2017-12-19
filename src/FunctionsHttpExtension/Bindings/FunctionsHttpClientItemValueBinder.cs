@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Bindings
 {
-    public class FunctionsHttpClientItemValueBinder<T> : IValueBinder where T : class
+    public class FunctionsHttpClientItemValueBinder<T> : IValueBinder where T : class, new()
     {
         private FunctionsHttpClientContext _context;
 
@@ -16,7 +16,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Bindings
 
         public Type Type => typeof(T);
 
-        public async Task<object> GetValueAsync() => await ExecuteResolvedAttribute();
+        public async Task<object> GetValueAsync() => new T();
         public string ToInvokeString() => string.Empty;
         public async Task SetValueAsync(object value, CancellationToken cancellationToken)
         {
