@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Bindings
 {
-    public class FunctionsHttpClientItemValueBinder<T> : IValueBinder where T : class, new()
+    public class FunctionsHttpClientItemValueBinderString : IValueBinder
     {
         private FunctionsHttpClientContext _context;
 
-        public FunctionsHttpClientItemValueBinder(FunctionsHttpClientContext context)
+        public FunctionsHttpClientItemValueBinderString(FunctionsHttpClientContext context)
         {
             _context = context;
         }
 
-        public Type Type => typeof(T);
+        public Type Type => typeof(string);
 
-        public async Task<object> GetValueAsync() => new T();
+        public Task<object> GetValueAsync() => Task.FromResult<object>(string.Empty);
         public string ToInvokeString() => string.Empty;
         public async Task SetValueAsync(object value, CancellationToken cancellationToken)
         {
@@ -30,10 +30,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Bindings
                     await _context.FunctionsHttpClient.GetAsync(_context.ResolvedAttribute.RequestUrl, _context.ResolvedAttribute.Headers, CancellationToken.None);
                     break;
                 case RequestMethod.Post:
-                    await _context.FunctionsHttpClient.PostAsync<T>(_context.ResolvedAttribute.RequestUrl, (T)value, _context.ResolvedAttribute.Headers, CancellationToken.None);
+                    await _context.FunctionsHttpClient.PostAsync(_context.ResolvedAttribute.RequestUrl, value, _context.ResolvedAttribute.Headers, CancellationToken.None);
                     break;
                 case RequestMethod.Put:
-                    await _context.FunctionsHttpClient.PutAsync<T>(_context.ResolvedAttribute.RequestUrl, (T)value, _context.ResolvedAttribute.Headers, CancellationToken.None);
+                    await _context.FunctionsHttpClient.PutAsync(_context.ResolvedAttribute.RequestUrl, value, _context.ResolvedAttribute.Headers, CancellationToken.None);
                     break;
                 case RequestMethod.Delete:
                     await _context.FunctionsHttpClient.DeleteAsync(_context.ResolvedAttribute.RequestUrl, _context.ResolvedAttribute.Headers, CancellationToken.None);

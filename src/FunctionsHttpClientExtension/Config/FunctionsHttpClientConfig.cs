@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Bindings;
+using Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Converter;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Azure.WebJobs.Host.Config;
@@ -29,12 +30,13 @@ namespace Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Config
         private IBindingProvider[] CreateBindings(BindingFactory factory)
         {
             return new IBindingProvider[] {
-                factory.BindToGenericValueProvider<FunctionsHttpClientAttribute>(BindForItemAsync),
-                factory.BindToInput<FunctionsHttpClientAttribute, OpenType>(typeof(FunctionsHttpClientItemValueInputBinder<>), CreateClient()),
+                factory.BindToCollector<FunctionsHttpClientAttribute, OpenType>(typeof(AsyncCollectorConverter<>), this),
+                factory.BindToInput<FunctionsHttpClientAttribute, IFunctionsHttpClient>(typeof(FunctionsHttpClientBinder), CreateClient()),
                 factory.BindToInput<FunctionsHttpClientAttribute, string>(typeof(FunctionsHttpClientStringBinder), CreateClient()),
                 factory.BindToInput<FunctionsHttpClientAttribute, byte[]>(typeof(FunctionsHttpClientByteArrayBinder), CreateClient()),
                 factory.BindToInput<FunctionsHttpClientAttribute, Stream>(typeof(FunctionsHttpClientStreamBinder), CreateClient()),
-                factory.BindToInput<FunctionsHttpClientAttribute, IFunctionsHttpClient>(typeof(FunctionsHttpClientBinder), CreateClient())
+                factory.BindToInput<FunctionsHttpClientAttribute, OpenType>(typeof(FunctionsHttpClientItemValueInputBinder<>), CreateClient()),
+                //factory.BindToGenericValueProvider<FunctionsHttpClientAttribute>(BindForItemAsync)
             };
         }
 
@@ -46,6 +48,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient.Config
             }
 
             FunctionsHttpClientContext context = CreateContext(attribute);
+            if(type == typeof(string))
+            {
+                return Task.FromResult<IValueBinder>(new FunctionsHttpClientItemValueBinderString(CreateContext(attribute)));
+            }
 
             Type genericType = typeof(FunctionsHttpClientItemValueBinder<>).MakeGenericType(type);
             IValueBinder binder = (IValueBinder)Activator.CreateInstance(genericType, context);
