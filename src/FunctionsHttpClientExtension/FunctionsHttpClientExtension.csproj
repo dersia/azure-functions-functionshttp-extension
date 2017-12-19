@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
+    <PackageId>Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient</PackageId>
+    <Description>This extension adds in- and out-bindings for Http</Description>
+    <Version>1.0.0-alpha8</Version>
+    <CommitHash Condition="$(CommitHash) == ''">N/A</CommitHash>
+    <InformationalVersion>$(Version) Commit hash: $(CommitHash)</InformationalVersion>
+    <AssemblyName>Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient</AssemblyName>
+    <RootNamespace>Microsoft.Azure.WebJobs.Extensions.FunctionsHttpClient</RootNamespace>
+    <Authors>github.com/dersia</Authors>
+    <Company>github.com/dersia</Company>
+    <PackageLicenseUrl>https://github.com/dersia/azure-functions-functionshttp-extension/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl />
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/dersia/azure-functions-functionshttp-extension</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.0-beta3" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="3.0.0-beta3" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+    <PackageReference Include="Microsoft.Azure.WebJobs" Version="2.1.0-beta4" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="2.1.0-beta4" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\FunctionsHttpClientExtension.Abstractions\FunctionsHttpClientExtension.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
